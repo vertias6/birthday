@@ -6,6 +6,7 @@ import CakeScene from './components/CakeScene'
 import VideoScene from './components/VideoScene'
 import SoundToggle from './components/SoundToggle'
 import { createBalloons, createFallingParticles } from './effects/balloons'
+import { useAudio } from './hooks/useAudio' // 已修正路径
 import './components/styles.css'
 
 // @ts-ignore
@@ -17,12 +18,10 @@ const VIDEO_PATH = birthdayVideo
 
 function App() {
   const [currentScene, setCurrentScene] = useState<Scene>('cake')
-  const [isSoundEnabled, setIsSoundEnabled] = useState(false)
   const bgCanvasRef = useRef<HTMLCanvasElement>(null)
 
-  const toggleAudio = () => {
-    setIsSoundEnabled(!isSoundEnabled)
-  }
+  // 音频控制（已修复）
+  const { isPlaying, setAudioEnabled } = useAudio()
 
   useEffect(() => {
     const canvas = bgCanvasRef.current
@@ -65,7 +64,11 @@ function App() {
         <canvas ref={bgCanvasRef} className="background-canvas" />
       )}
       
-      <SoundToggle isEnabled={isSoundEnabled} onToggle={toggleAudio} />
+      {/* 声音按钮已修复 */}
+      <SoundToggle 
+        isEnabled={isPlaying} 
+        onToggle={setAudioEnabled} 
+      />
       
       {currentScene === 'cake' && (
         <CakeScene onBlowOut={handleBlowOut} />
@@ -76,15 +79,15 @@ function App() {
       )}
       
       {currentScene === 'card' && (
-        <CardScene onOpen={handleCardOpen} isSoundEnabled={isSoundEnabled} />
+        <CardScene onOpen={handleCardOpen} isSoundEnabled={isPlaying} />
       )}
       
       {currentScene === 'reveal' && (
-        <RevealScene onComplete={handleRevealComplete} isSoundEnabled={isSoundEnabled} />
+        <RevealScene onComplete={handleRevealComplete} isSoundEnabled={isPlaying} />
       )}
       
       {currentScene === 'final' && (
-        <FinalScene isSoundEnabled={isSoundEnabled} />
+        <FinalScene isSoundEnabled={isPlaying} />
       )}
     </div>
   )
