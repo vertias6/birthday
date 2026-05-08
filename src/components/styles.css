@@ -309,7 +309,7 @@
 .final-letter {
   background: linear-gradient(145deg, #f5f0e6 0%, #e8dfd4 100%);
   border-radius: 8px;
-  padding: 40px;
+  padding: 30px 20px;
   box-shadow: 
     0 10px 30px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
@@ -317,6 +317,15 @@
   line-height: 2;
   color: #4a3728;
   letter-spacing: 1px;
+  max-height: 75vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.final-letter::-webkit-scrollbar {
+  display: none;
 }
 
 .final-letter p {

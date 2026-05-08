@@ -50,7 +50,17 @@ function FinalScene({ isSoundEnabled }: FinalSceneProps) {
       <div className="light-effect" ref={lightRef}></div>
       
       <div className="final-content">
-        <div ref={textRef} className="final-letter">
+        {/* 👇 关键修改：给文字容器加了滚动和内边距 */}
+        <div 
+          ref={textRef} 
+          className="final-letter"
+          style={{
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            padding: '0 16px 40px',
+            boxSizing: 'border-box'
+          }}
+        >
           <p>hi 大傻子</p>
           <p>让我来看看今天的寿星是谁呢</p>
           <p>原来是大傻子，时间过得好快已经为大傻子过了3次生日呢</p>
