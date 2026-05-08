@@ -3,39 +3,33 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 export function useAudio() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [userInteracted, setUserInteracted] = useState(false);
 
-  // 初始化音频
+  // 🔥 最稳的初始化方式
   useEffect(() => {
-    const audio = new Audio('/bgm.mp3');
+    const audio = new Audio();
+    audio.src = '/bgm.mp3';  // 明确写
     audio.loop = true;
     audio.volume = 0.4;
+    audio.preload = 'auto';
     audioRef.current = audio;
-
-    // 监听用户第一次点击（浏览器必须要交互才能播放声音）
-    const handleFirstInteraction = () => {
-      setUserInteracted(true);
-      // 用户第一次交互时自动播放音乐
-      audio.play().then(() => {
-        setIsPlaying(true);
-      }).catch(err => console.log('自动播放失败', err));
-    };
-
-    window.addEventListener('click', handleFirstInteraction, { once: true });
 
     return () => {
       audio.pause();
-      window.removeEventListener('click', handleFirstInteraction);
+      audio.src = '';
     };
   }, []);
 
-  // 播放
+  // 🔥 强制播放
   const play = useCallback(() => {
-    if (!audioRef.current || !userInteracted) return;
-    audioRef.current.play().then(() => {
-      setIsPlaying(true);
-    }).catch(err => console.log('播放失败', err));
-  }, [userInteracted]);
+    if (!audioRef.current) return;
+    
+    const playPromise = audioRef.current.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => setIsPlaying(true))
+        .catch(err => console.log('播放失败（浏览器限制）', err));
+    }
+  }, []);
 
   // 暂停
   const pause = useCallback(() => {
@@ -46,13 +40,16 @@ export function useAudio() {
 
   // 开关
   const toggleAudio = useCallback(() => {
-    if (isPlaying) pause();
-    else play();
+    if (isPlaying) {
+      pause();
+    } else {
+      play();
+    }
   }, [isPlaying, play, pause]);
 
   return {
     isPlaying,
     toggleAudio,
-    setAudioEnabled: toggleAudio, // 兼容你现有组件
+    setAudioEnabled: toggleAudio,
   };
 }
