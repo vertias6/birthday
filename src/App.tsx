@@ -8,9 +8,12 @@ import SoundToggle from './components/SoundToggle'
 import { createBalloons, createFallingParticles } from './effects/balloons'
 import './components/styles.css'
 
+// @ts-ignore
+import birthdayVideo from './birthday.mp4'
+
 type Scene = 'cake' | 'video' | 'card' | 'reveal' | 'final'
 
-const VIDEO_PATH = '/birthday.mp4'
+const VIDEO_PATH = birthdayVideo
 
 function App() {
   const [currentScene, setCurrentScene] = useState<Scene>('cake')

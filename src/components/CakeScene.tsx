@@ -1,17 +1,19 @@
 import { useRef, useState } from 'react'
 import gsap from 'gsap'
 
+// 👇 👇 👇 全部改成正确导入
+import dog1 from '../dog1.jpg'
+import dog2 from '../dog2.jpg'
+import dog3 from '../dog3.jpg'
+import girl from '../girl.jpg'
+
 interface CakeSceneProps {
   onBlowOut: () => void
   isSoundEnabled?: boolean
 }
 
-const DOG_IMAGES = [
-  '/dog1.jpg',
-  '/dog2.jpg',
-  '/dog3.jpg',
-  '/girl.jpg',
-]
+// 👇 👇 👇 正确路径
+const DOG_IMAGES = [dog1, dog2, dog3, girl]
 
 function CakeScene({ onBlowOut }: CakeSceneProps) {
   const cakeRef = useRef<HTMLDivElement>(null)
