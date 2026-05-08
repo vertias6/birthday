@@ -15,6 +15,10 @@ export function useAudio() {
     // 监听用户第一次点击（浏览器必须要交互才能播放声音）
     const handleFirstInteraction = () => {
       setUserInteracted(true);
+      // 用户第一次交互时自动播放音乐
+      audio.play().then(() => {
+        setIsPlaying(true);
+      }).catch(err => console.log('自动播放失败', err));
     };
 
     window.addEventListener('click', handleFirstInteraction, { once: true });
