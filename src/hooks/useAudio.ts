@@ -1,59 +1,54 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-
-const AUDIO_PATH = '/bgm.mp3'
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export function useAudio() {
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [hasInteracted, setHasInteracted] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
 
+  // 初始化音频
   useEffect(() => {
-    const audio = new Audio(AUDIO_PATH)
-    audio.loop = true
-    audio.volume = 0.3
-    audioRef.current = audio
+    const audio = new Audio('/bgm.mp3');
+    audio.loop = true;
+    audio.volume = 0.4;
+    audioRef.current = audio;
 
-    const handleInteraction = () => {
-      setHasInteracted(true)
-    }
+    // 监听用户第一次点击（浏览器必须要交互才能播放声音）
+    const handleFirstInteraction = () => {
+      setUserInteracted(true);
+    };
 
-    document.addEventListener('click', handleInteraction, { once: true })
+    window.addEventListener('click', handleFirstInteraction, { once: true });
 
     return () => {
-      audio.pause()
-      document.removeEventListener('click', handleInteraction)
-    }
-  }, [])
+      audio.pause();
+      window.removeEventListener('click', handleFirstInteraction);
+    };
+  }, []);
 
-  const playAudio = useCallback(() => {
-    if (!audioRef.current || !hasInteracted) return
-
+  // 播放
+  const play = useCallback(() => {
+    if (!audioRef.current || !userInteracted) return;
     audioRef.current.play().then(() => {
-      setIsPlaying(true)
-    }).catch(err => console.log('播放失败', err))
-  }, [hasInteracted])
+      setIsPlaying(true);
+    }).catch(err => console.log('播放失败', err));
+  }, [userInteracted]);
 
-  const pauseAudio = useCallback(() => {
-    if (!audioRef.current) return
-    audioRef.current.pause()
-    setIsPlaying(false)
-  }, [])
+  // 暂停
+  const pause = useCallback(() => {
+    if (!audioRef.current) return;
+    audioRef.current.pause();
+    setIsPlaying(false);
+  }, []);
 
+  // 开关
   const toggleAudio = useCallback(() => {
-    if (isPlaying) {
-      pauseAudio()
-    } else {
-      playAudio()
-    }
-  }, [isPlaying, playAudio, pauseAudio])
+    if (isPlaying) pause();
+    else play();
+  }, [isPlaying, play, pause]);
 
-  const setAudioEnabled = useCallback((enabled: boolean) => {
-    if (enabled) {
-      playAudio()
-    } else {
-      pauseAudio()
-    }
-  }, [playAudio, pauseAudio])
-
-  return { isPlaying, toggleAudio, setAudioEnabled }
+  return {
+    isPlaying,
+    toggleAudio,
+    setAudioEnabled: toggleAudio, // 兼容你现有组件
+  };
 }

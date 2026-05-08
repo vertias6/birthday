@@ -1,96 +1,68 @@
-import { useState, useEffect, useRef } from 'react'
-import CardScene from './components/CardScene'
-import RevealScene from './components/RevealScene'
-import FinalScene from './components/FinalScene'
-import CakeScene from './components/CakeScene'
-import VideoScene from './components/VideoScene'
-import SoundToggle from './components/SoundToggle'
-import { createBalloons, createFallingParticles } from './effects/balloons'
-import { useAudio } from './hooks/useAudio' // 已修正路径
-import './components/styles.css'
+import { useState, useEffect, useRef } from 'react';
+import CardScene from './components/CardScene';
+import RevealScene from './components/RevealScene';
+import FinalScene from './components/FinalScene';
+import CakeScene from './components/CakeScene';
+import VideoScene from './components/VideoScene';
+import SoundToggle from './components/SoundToggle';
+import { createBalloons, createFallingParticles } from './effects/balloons';
+import { useAudio } from './hooks/useAudio';
+import './components/styles.css';
 
 // @ts-ignore
-import birthdayVideo from './birthday.mp4'
+import birthdayVideo from './birthday.mp4';
 
-type Scene = 'cake' | 'video' | 'card' | 'reveal' | 'final'
+type Scene = 'cake' | 'video' | 'card' | 'reveal' | 'final';
 
-const VIDEO_PATH = birthdayVideo
+const VIDEO_PATH = birthdayVideo;
 
 function App() {
-  const [currentScene, setCurrentScene] = useState<Scene>('cake')
-  const bgCanvasRef = useRef<HTMLCanvasElement>(null)
-
-  // 音频控制（已修复）
-  const { isPlaying, setAudioEnabled } = useAudio()
+  const [currentScene, setCurrentScene] = useState<Scene>('cake');
+  const bgCanvasRef = useRef<HTMLCanvasElement>(null);
+  const { isPlaying, setAudioEnabled } = useAudio();
 
   useEffect(() => {
-    const canvas = bgCanvasRef.current
-    if (!canvas) return
+    const canvas = bgCanvasRef.current;
+    if (!canvas) return;
 
     const resize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
 
-    resize()
-    window.addEventListener('resize', resize)
-    createBalloons(canvas)
-    createFallingParticles(canvas)
+    resize();
+    window.addEventListener('resize', resize);
+    createBalloons(canvas);
+    createFallingParticles(canvas);
 
     return () => {
-      window.removeEventListener('resize', resize)
-    }
-  }, [])
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
 
-  const handleCardOpen = () => {
-    setCurrentScene('reveal')
-  }
-
-  const handleRevealComplete = () => {
-    setCurrentScene('final')
-  }
-
-  const handleBlowOut = () => {
-    setCurrentScene('video')
-  }
-
-  const handleVideoComplete = () => {
-    setCurrentScene('card')
-  }
+  const handleCardOpen = () => setCurrentScene('reveal');
+  const handleRevealComplete = () => setCurrentScene('final');
+  const handleBlowOut = () => setCurrentScene('video');
+  const handleVideoComplete = () => setCurrentScene('card');
 
   return (
     <div className="app">
       {currentScene !== 'video' && (
         <canvas ref={bgCanvasRef} className="background-canvas" />
       )}
-      
-      {/* 声音按钮已修复 */}
-      <SoundToggle 
-        isEnabled={isPlaying} 
-        onToggle={setAudioEnabled} 
+
+      <SoundToggle
+        isEnabled={isPlaying}
+        onToggle={setAudioEnabled}
       />
-      
-      {currentScene === 'cake' && (
-        <CakeScene onBlowOut={handleBlowOut} />
-      )}
-      
-      {currentScene === 'video' && (
-        <VideoScene videoSrc={VIDEO_PATH} onComplete={handleVideoComplete} />
-      )}
-      
-      {currentScene === 'card' && (
-        <CardScene onOpen={handleCardOpen} isSoundEnabled={isPlaying} />
-      )}
-      
-      {currentScene === 'reveal' && (
-        <RevealScene onComplete={handleRevealComplete} isSoundEnabled={isPlaying} />
-      )}
-      
-      {currentScene === 'final' && (
-        <FinalScene isSoundEnabled={isPlaying} />
-      )}
+
+      {currentScene === 'cake' && <CakeScene onBlowOut={handleBlowOut} />}
+      {currentScene === 'video' && <VideoScene videoSrc={VIDEO_PATH} onComplete={handleVideoComplete} />}
+      {currentScene === 'card' && <CardScene onOpen={handleCardOpen} isSoundEnabled={isPlaying} />}
+      {currentScene === 'reveal' && <RevealScene onComplete={handleRevealComplete} isSoundEnabled={isPlaying} />}
+      {currentScene === 'final' && <FinalScene isSoundEnabled={isPlaying} />}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
